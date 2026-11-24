@@ -34,6 +34,37 @@ The first time an IfcGH component solves, Rhino downloads `ifcopenshell` and
 `openpyxl` from PyPI into its Python environment. This takes a minute or two
 (the `ifcopenshell` download is large); later runs are fast.
 
+## IfcExport `param` keys
+
+Connect a panel to `param` with one `key = value` per line (all optional):
+
+| Key | Meaning |
+| --- | --- |
+| `IfcSchema` | IFC schema, default `"IFC4X3_ADD2"` |
+| `IfcProject` | Project name |
+| `IfcSite` | Site name |
+| `IfcBasePoint` | Export vector `(x, y)` in mm: the real-world XY of the Rhino origin |
+| `IfcBasePointExport` | How the vector is stored: `site` (default), `mapconversion` or `world` |
+| `IfcCRS` | Coordinate reference system for `mapconversion`, e.g. `"EPSG:5111"` |
+
+Model near the Rhino origin and let `IfcBasePoint` place the IFC at its real
+coordinates. The geometry itself is always written as modelled:
+
+- `site` - the offset goes on the IfcSite placement.
+- `mapconversion` - adds `IfcMapConversion` + `IfcProjectedCRS` (Eastings/Northings
+  in metres); needs `IfcCRS`, otherwise `site` is used.
+- `world` - the vector is ignored.
+
+```
+IfcProject = "E14 Mindre betongkonstruksjoner"
+IfcBasePoint = (98200000, 1609000000)
+IfcBasePointExport = mapconversion
+IfcCRS = "EPSG:5111"
+```
+
+IfcExport shows a warning when the geometry lies more than 1 km from the Rhino
+origin: such large coordinates may display wrongly in IFC viewers.
+
 ## Update
 
 Install the newer `.yak` the same way, then restart Rhino.
